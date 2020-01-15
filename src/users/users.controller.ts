@@ -1,4 +1,4 @@
-import { Controller, Logger } from '@nestjs/common';
+import { Controller, Logger, Body } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { UsersService } from './users.service';
 
@@ -16,4 +16,10 @@ export class UsersController {
   //   this.logger.log('Fetching patients');
   //   return this.usersService.getPatients();
   // }
+
+  @MessagePattern('getUserDetails')
+  async getUserDetails(@Body() req): Promise<any> {
+      const user = await this.usersService.getUserDetails(req);
+      return user;
+  }
 }

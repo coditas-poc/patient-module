@@ -15,6 +15,7 @@ import { Constants } from 'utils/constants';
 import { AuthGuard } from '@nestjs/passport';
 import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { ExceptionFilter } from 'src/filters/rpc-exception.filter';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -24,7 +25,12 @@ export class AuthController {
 
   // @UseFilters(new ExceptionFilter())
   @MessagePattern('login')
-  async login(@Body() request): Promise<any> {
-    return await this.authService.login(request);
+  async login(@Body() request, @Res() res: Response): Promise<any> {
+      const user = await this.authService.login(request);
+      if (user.statusCode === '200') {
+          return user;
+      } else {
+          return user.message;
+      }
   }
 }

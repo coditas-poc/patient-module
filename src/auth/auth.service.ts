@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 // import { Credentials } from 'src/credentials/credentials.entity';
@@ -9,10 +9,14 @@ import { sign } from 'jsonwebtoken';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Credentials } from '../credentials/credentials.entity';
 import { Constants } from 'utils/constants';
+import { json } from 'express';
+import { RpcException } from '@nestjs/microservices';
 
 export enum Provider {
   GOOGLE = 'google',
 }
+
+const saltRounds = 10;
 @Injectable()
 export class AuthService {
     // create a logger instance
@@ -26,25 +30,44 @@ export class AuthService {
     @InjectRepository(Users) public readonly usersRepository: Repository<Users>,
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<any> {
-    this.logger.log('emial');
-    const user = await this.usersService.getLoginCredential(email);
-    const hash = await bcrypt.compare(pass, user.password);
-
+  async validateUser(payload): Promise<any> {
+    this.logger.log('validate user');
+    const user = await this.usersService.getLoginCredential(payload.email);
     if (user) {
-      const { password, ...result } = user;
-      return result;
+        const hash = await bcrypt.compare(payload.password, user.password);
+        if (hash) {
+            return {
+                statusCode: Constants.STATUSCODE.SUCCESS,
+                status: Constants.STATUS.SUCCESS,
+                access_token: this.jwtService.sign(payload),
+              };
+        }
+    } else {
+        return 'No user found';
     }
+
     return null;
   }
 
-  async login(user: any) {
-    const payload = { username: user.username };
-    return {
-      statusCode: Constants.STATUSCODE.SUCCESS,
-      status: Constants.STATUS.SUCCESS,
-      access_token: this.jwtService.sign(payload),
-    };
+  async login(payload) {
+    this.logger.log('login check');
+    const user = await this.usersService.getLoginCredential(payload.email);
+    if (user) {
+        const hashPass = await bcrypt.compare(payload.password, user.password);
+        console.log('>> hash', hashPass);
+        if (hashPass) {
+            return {
+                statusCode: Constants.STATUSCODE.SUCCESS,
+                status: Constants.STATUS.SUCCESS,
+                access_token: this.jwtService.sign(user.email),
+                email: user.email,
+              };
+        } else {
+            return {message: 'Invalid Email-id or password'};
+        }
+    } else {
+        return {message: 'Email id not registered'};
+    }
   }
 
   async validateOAuthLogin(
