@@ -22,7 +22,6 @@ export class AuthController {
   private logger = new Logger('AuthController');
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(AuthGuard('local'))
   // @UseFilters(new ExceptionFilter())
   @MessagePattern('login')
   async login(@Body() request): Promise<any> {

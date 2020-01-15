@@ -31,7 +31,7 @@ export class AuthService {
     const user = await this.usersService.getLoginCredential(email);
     const hash = await bcrypt.compare(pass, user.password);
 
-    if (user && hash) {
+    if (user) {
       const { password, ...result } = user;
       return result;
     }
