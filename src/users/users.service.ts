@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PATIENTS } from '../mocks/patients.mock';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './users.entity';
 import { Repository } from 'typeorm';
 import { Credentials } from '../credentials/credentials.entity';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class UsersService {
@@ -37,10 +38,19 @@ export class UsersService {
         });
         return users;
       }
-      async getUserDetails(email: string): Promise<Users> {
-        const userDetails = await this.usersRepository.findOne({
-            where: {email},
-        });
-        return userDetails;
+      async getUserDetails(res): Promise<any> {
+        console.log('email', res.email);
+        try {
+          const userDetails = await this.usersRepository.findOneOrFail({email: res.email });
+          // .catch(() => {
+          //   throw new RpcException(
+          //     new NotFoundException('User with provided id does not exist'),
+          //   );
+          // });
+          console.log('userDetails', userDetails);
+          return userDetails;
+        } catch (e) {
+          console.log('userDetails', e);
+        }
       }
 }

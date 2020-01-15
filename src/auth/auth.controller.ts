@@ -33,4 +33,9 @@ export class AuthController {
           return user.message;
       }
   }
+
+  @MessagePattern('signup')
+  async signup(@Body() request, @Res() res: Response): Promise<any> {
+      return await this.authService.signup(request);
+  }
 }

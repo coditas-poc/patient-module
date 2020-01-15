@@ -70,6 +70,24 @@ export class AuthService {
     }
   }
 
+  async signup(payload): Promise<any> {
+    try {
+      const salt = bcrypt.genSaltSync(saltRounds);
+      const { password } = payload;
+      const hashPass = bcrypt.hashSync(password, salt);
+      const userData = await this.usersRepository.save(payload);
+      if (userData) {
+        const userId = userData.id;
+        const { email } = userData;
+        await this.loginRepository.save({ email, password: hashPass, userId });
+        return { access_token: this.jwtService.sign({ username: email }) };
+      }
+    } catch (e) {
+      const message = e.detail;
+      return { message };
+    }
+  }
+
   async validateOAuthLogin(
     thirdPartyId: string,
     provider: Provider,
