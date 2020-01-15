@@ -57,9 +57,6 @@ export class AuthService {
         console.log('>> hash', hashPass);
         if (hashPass) {
             return {
-                statusCode: Constants.STATUSCODE.SUCCESS,
-                status: Constants.STATUS.SUCCESS,
-                access_token: this.jwtService.sign(user.email),
                 email: user.email,
               };
         } else {

@@ -1,8 +1,9 @@
 import { Controller, Logger, Body } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { UsersService } from './users.service';
+import { CreateAuthUserDto } from '../auth/auth.dto';
 
-@Controller('users')
+@Controller()
 export class UsersController {
   // create a logger instance
   private logger = new Logger('AppController');
@@ -10,16 +11,14 @@ export class UsersController {
   // inject the patient service
   constructor(private usersService: UsersService) {}
 
-  // define message pattern for get all patients method
-  // @MessagePattern('getPatients')
-  // getPatients() {
-  //   this.logger.log('Fetching patients');
-  //   return this.usersService.getPatients();
-  // }
-
   @MessagePattern('getUserDetails')
   async getUserDetails(@Body() req): Promise<any> {
       const user = await this.usersService.getUserDetails(req);
       return user;
+  }
+
+  @MessagePattern({ cmd: 'signup' })
+  public async createAuthUser(createAuthUserDto: CreateAuthUserDto): Promise<any> {
+    return this.usersService.createAuthUser(createAuthUserDto);
   }
 }

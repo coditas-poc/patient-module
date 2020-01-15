@@ -26,12 +26,8 @@ export class AuthController {
   // @UseFilters(new ExceptionFilter())
   @MessagePattern('login')
   async login(@Body() request, @Res() res: Response): Promise<any> {
-      const user = await this.authService.login(request);
-      if (user.statusCode === '200') {
-          return user;
-      } else {
-          return user.message;
-      }
+      return await this.authService.login(request);
+
   }
 
   @MessagePattern('signup')
