@@ -2,40 +2,28 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { PATIENTS } from '../mocks/patients.mock';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './users.entity';
 import { Repository } from 'typeorm';
 import { Credentials } from '../credentials/credentials.entity';
 import { RpcException } from '@nestjs/microservices';
-import { CreateAuthUserDto } from 'src/auth/auth.dto';
+import { CreateAuthUserDto } from './user.dto';
+import { Logger } from '@nestjs/common';
+import bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 @Injectable()
 export class UsersService {
-  // patients = PATIENTS;
-
-  // getPatients(): Promise<any> {
-  //     return new Promise(resolve => {
-  //         resolve(this.patients);
-  //     });
-  // }
+  // create a logger instance
+  private logger = new Logger('AuthService');
 
   constructor(
     @InjectRepository(Users) private usersRepository: Repository<Users>,
     @InjectRepository(Credentials)
     private loginRepository: Repository<Credentials>,
   ) {}
-  async userLogin(): Promise<Users[]> {
-    const userDetails = await this.usersRepository.find();
-    return userDetails;
-  }
-  async userSignUp(users: Users): Promise<Users> {
-    const { email } = users;
-    const usersData = await this.usersRepository.save(users);
-    const saveLoginData = await this.loginRepository.save({ email });
-    return { ...usersData, ...saveLoginData };
-  }
   async getLoginCredential(email: string): Promise<Credentials> {
     const users = await this.loginRepository.findOne({
       where: { email },
@@ -53,7 +41,25 @@ export class UsersService {
       console.log('userDetails', userDetails);
       return userDetails;
     } catch (e) {
-      console.log('userDetails', e);
+      // console.log('userDetails', e);
+    }
+  }
+
+  public async verifyAuthUserByEmail(dto) {
+    this.logger.log('Fetch login');
+    const auth = await this.loginRepository.findOne({ email: dto.email });
+    if (!auth) {
+      throw new RpcException(
+        new UnauthorizedException('User with provided email does not exist'),
+      );
+    }
+    const passHash = await bcrypt.compare(dto.password, auth.password);
+    if (passHash) {
+      return { email: auth.email };
+    } else {
+      throw new RpcException(
+        new UnauthorizedException('Password is incorrect'),
+      );
     }
   }
 
@@ -68,11 +74,15 @@ export class UsersService {
         ),
       );
     }
-    const usersData = await this.usersRepository.save(authUser);
-    const saveLoginData = await this.loginRepository.save({
-      email: authUser.email,
-    });
-    if (usersData && saveLoginData) {
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const { password, ...rest } = authUser;
+    const hashPass = bcrypt.hashSync(password, salt);
+    const usersData = await this.usersRepository.save(rest);
+
+    if (usersData) {
+      const userId = usersData.id;
+      const { email } = usersData;
+      await this.loginRepository.save({ email, password: hashPass, userId });
       return usersData;
     }
   }

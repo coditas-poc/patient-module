@@ -15,8 +15,8 @@ export class Users extends BaseEntity {
 
   @Column({ type: 'varchar', length: 10 })
   gender: string;
-
-  @Column({ type: 'varchar', length: 12, unique: true })
+    // changed mobile no to common entity
+  @Column({ type: 'varchar', length: 12})
   mobileNumber: number;
 
   @Column({ type: 'varchar', length: 500 })
