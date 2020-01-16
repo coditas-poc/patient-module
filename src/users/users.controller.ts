@@ -12,7 +12,7 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @MessagePattern('getUserDetails')
-  async getUserDetails( id : string): Promise<any> {
+  async getUserDetails( id: string): Promise<any> {
       const user = await this.usersService.getUserDetails(id);
       return user;
   }

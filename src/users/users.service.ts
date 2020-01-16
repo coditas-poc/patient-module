@@ -33,12 +33,6 @@ export class UsersService {
   async getUserDetails(id): Promise<any> {
     try {
       const userDetails = await this.usersRepository.findOne(id);
-      // .catch(() => {
-      //   throw new RpcException(
-      //     new NotFoundException('User with provided id does not exist'),
-      //   );
-      // });
-      console.log('userDetails', userDetails);
       return userDetails;
     } catch (e) {
       // console.log('userDetails', e);
