@@ -24,4 +24,14 @@ export class UsersController {
   public async createAuthUser(createAuthUserDto: CreateAuthUserDto): Promise<any> {
     return this.usersService.createAuthUser(createAuthUserDto);
   }
+
+  @MessagePattern('verifyEmail')
+  public async verifyEmail(email): Promise<any> {
+    return this.usersService.verifyEmail(email);
+  }
+
+  @MessagePattern('verifyMemberId')
+  public async verifyMemberId(memberId): Promise<any> {
+    return this.usersService.verifyMemberId(memberId);
+  }
 }

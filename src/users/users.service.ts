@@ -83,4 +83,24 @@ export class UsersService {
       return usersData;
     }
   }
+
+  public async verifyEmail(email) {
+    this.logger.log('Fetch Email');
+    const auth = await this.usersRepository.findOne(email);
+    if (auth) {
+      throw new RpcException(
+        new UnauthorizedException('User with provided email already exist'),
+      );
+    } else {return {...email, isValid: true}; }
+  }
+
+  public async verifyMemberId(memberId) {
+    this.logger.log('Fetch Member ID');
+    const auth = await this.usersRepository.findOne(memberId);
+    if (auth) {
+      throw new RpcException(
+        new ConflictException('User with provided memberId already exist'),
+      );
+    } else { return {...memberId, isValid: true}; }
+  }
 }
