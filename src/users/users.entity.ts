@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { BaseEntity } from '../base.entity';
+import { Contact } from 'src/emergency/entities/contact.entity';
 
 @Entity('users')
 export class Users extends BaseEntity {
@@ -48,5 +49,8 @@ export class Users extends BaseEntity {
 
   @Column('boolean', { default: false })
   emailVerfied: boolean;
+
+  // @OneToMany(type => Contact,contact => contact.user, { eager: true})
+  //   contacts: Contact[];
 
 }
