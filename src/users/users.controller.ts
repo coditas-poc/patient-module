@@ -12,8 +12,8 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @MessagePattern('getUserDetails')
-  async getUserDetails(@Body() req): Promise<any> {
-      const user = await this.usersService.getUserDetails(req);
+  async getUserDetails( id : string): Promise<any> {
+      const user = await this.usersService.getUserDetails(id);
       return user;
   }
 
