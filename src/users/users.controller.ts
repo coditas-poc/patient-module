@@ -9,16 +9,16 @@ export class UsersController {
   private logger = new Logger('AppController');
 
   // inject the patient service
-  constructor(private usersService: UsersService) {}
+  constructor(private usersService: UsersService) { }
 
   @MessagePattern('getUserDetails')
-  async getUserDetails( id: string): Promise<any> {
-      const user = await this.usersService.getUserDetails(id);
-      return user;
+  async getUserDetails(id: string): Promise<any> {
+    const user = await this.usersService.getUserDetails(id);
+    return user;
   }
   @MessagePattern('login')
   async login(dto): Promise<any> {
-      return await this.usersService.verifyAuthUserByEmail(dto);
+    return await this.usersService.verifyAuthUserByEmail(dto);
   }
   @MessagePattern('signup')
   public async createAuthUser(createAuthUserDto: CreateAuthUserDto): Promise<any> {
@@ -33,5 +33,10 @@ export class UsersController {
   @MessagePattern('verifyMemberId')
   public async verifyMemberId(memberId): Promise<any> {
     return this.usersService.verifyMemberId(memberId);
+  }
+  @MessagePattern('verifyOtp')
+  async verifyOtp(@Body() req): Promise<any> {
+    const user = await this.usersService.verifyOtp(req);
+    return user;
   }
 }

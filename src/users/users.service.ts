@@ -23,7 +23,18 @@ export class UsersService {
     @InjectRepository(Users) private usersRepository: Repository<Users>,
     @InjectRepository(Credentials)
     private loginRepository: Repository<Credentials>,
-  ) {}
+  ) { }
+  // ) { }
+  // async userLogin(): Promise<Users[]> {
+  //   const userDetails = await this.usersRepository.find();
+  //   return userDetails;
+  // }
+  // async userSignUp(users: Users): Promise<Users> {
+  //   const { email } = users;
+  //   const usersData = await this.usersRepository.save(users);
+  //   const saveLoginData = await this.loginRepository.save({ email });
+  //   return { ...usersData, ...saveLoginData };
+  // }
   async getLoginCredential(email: string): Promise<Credentials> {
     const users = await this.loginRepository.findOne({
       where: { email },
@@ -88,7 +99,7 @@ export class UsersService {
       throw new RpcException(
         new UnauthorizedException('User with provided email already exist'),
       );
-    } else {return {...email, isValid: true}; }
+    } else { return { ...email, isValid: true }; }
   }
 
   public async verifyMemberId(memberId) {
@@ -98,6 +109,13 @@ export class UsersService {
       throw new RpcException(
         new ConflictException('User with provided memberId already exist'),
       );
-    } else { return {...memberId, isValid: true}; }
+    } else { return { ...memberId, isValid: true }; }
+  }
+  async verifyOtp(data): Promise<any> {
+    const { otp, dob } = data;
+    const userData = await this.usersRepository.findOne({ OTP: otp, dob })
+    if (userData) {
+      return userData;
+    }
   }
 }
