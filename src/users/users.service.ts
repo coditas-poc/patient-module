@@ -1,40 +1,121 @@
-import { Injectable } from '@nestjs/common';
-import { PATIENTS } from '../mocks/patients.mock';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './users.entity';
 import { Repository } from 'typeorm';
 import { Credentials } from '../credentials/credentials.entity';
+import { RpcException } from '@nestjs/microservices';
+import { CreateAuthUserDto } from './user.dto';
+import { Logger } from '@nestjs/common';
+import bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 @Injectable()
 export class UsersService {
+  // create a logger instance
+  private logger = new Logger('AuthService');
 
-    // patients = PATIENTS;
+  constructor(
+    @InjectRepository(Users) private usersRepository: Repository<Users>,
+    @InjectRepository(Credentials)
+    private loginRepository: Repository<Credentials>,
+  ) { }
+  // ) { }
+  // async userLogin(): Promise<Users[]> {
+  //   const userDetails = await this.usersRepository.find();
+  //   return userDetails;
+  // }
+  // async userSignUp(users: Users): Promise<Users> {
+  //   const { email } = users;
+  //   const usersData = await this.usersRepository.save(users);
+  //   const saveLoginData = await this.loginRepository.save({ email });
+  //   return { ...usersData, ...saveLoginData };
+  // }
+  async getLoginCredential(email: string): Promise<Credentials> {
+    const users = await this.loginRepository.findOne({
+      where: { email },
+    });
+    return users;
+  }
+  async getUserDetails(id): Promise<any> {
+    try {
+      const userDetails = await this.usersRepository.findOne(id);
+      return userDetails;
+    } catch (e) {
+      // console.log('userDetails', e);
+    }
+  }
 
-    // getPatients(): Promise<any> {
-    //     return new Promise(resolve => {
-    //         resolve(this.patients);
-    //     });
-    // }
+  public async verifyAuthUserByEmail(dto) {
+    this.logger.log('Fetch login');
+    const auth = await this.loginRepository.findOne({ email: dto.email });
+    if (!auth) {
+      throw new RpcException(
+        new UnauthorizedException('User with provided email does not exist'),
+      );
+    }
+    const passHash = await bcrypt.compare(dto.password, auth.password);
+    if (passHash) {
+      return { email: auth.email };
+    } else {
+      throw new RpcException(
+        new UnauthorizedException('Password is incorrect'),
+      );
+    }
+  }
 
-    constructor(
-        @InjectRepository(Users) private usersRepository: Repository<Users>,
-        @InjectRepository(Credentials)
-        private loginRepository: Repository<Credentials>,
-      ) {}
-      async userLogin(): Promise<Users[]> {
-        const userDetails = await this.usersRepository.find();
-        return userDetails;
-      }
-      async userSignUp(users: Users): Promise<Users> {
-        const { email } = users;
-        const usersData = await this.usersRepository.save(users);
-        const saveLoginData = await this.loginRepository.save({ email });
-        return { ...usersData, ...saveLoginData };
-      }
-      async getLoginCredential(email: string): Promise<Credentials> {
-        const users = await this.loginRepository.findOne({
-          where: { email },
-        });
-        return users;
-      }
+  public async createAuthUser(authUser: CreateAuthUserDto): Promise<Users> {
+    const emailUser = await this.usersRepository.findOne({
+      email: authUser.email,
+    });
+    if (emailUser) {
+      throw new RpcException(
+        new ConflictException(
+          'User with provided email or phone number already exists',
+        ),
+      );
+    }
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const { password, ...rest } = authUser;
+    const hashPass = bcrypt.hashSync(password, salt);
+    const usersData = await this.usersRepository.save(rest);
+
+    if (usersData) {
+      const userId = usersData.id;
+      const { email } = usersData;
+      await this.loginRepository.save({ email, password: hashPass, userId });
+      return usersData;
+    }
+  }
+
+  public async verifyEmail(email) {
+    this.logger.log('Fetch Email');
+    const auth = await this.usersRepository.findOne(email);
+    if (auth) {
+      throw new RpcException(
+        new UnauthorizedException('User with provided email already exist'),
+      );
+    } else { return { ...email, isValid: true }; }
+  }
+
+  public async verifyMemberId(memberId) {
+    this.logger.log('Fetch Member ID');
+    const auth = await this.usersRepository.findOne(memberId);
+    if (auth) {
+      throw new RpcException(
+        new ConflictException('User with provided memberId already exist'),
+      );
+    } else { return { ...memberId, isValid: true }; }
+  }
+  async verifyOtp(data): Promise<any> {
+    const { otp, dob } = data;
+    const userData = await this.usersRepository.findOne({ OTP: otp, dob })
+    if (userData) {
+      return userData;
+    }
+  }
 }

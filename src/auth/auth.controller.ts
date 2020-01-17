@@ -14,17 +14,10 @@ import { ResponseBody } from 'utils/responseBody';
 import { Constants } from 'utils/constants';
 import { AuthGuard } from '@nestjs/passport';
 import { MessagePattern, RpcException } from '@nestjs/microservices';
-import { ExceptionFilter } from 'src/filters/rpc-exception.filter';
+import { Response } from 'express';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  // create a logger instance
-  private logger = new Logger('AuthController');
-  constructor(private readonly authService: AuthService) {}
 
-  // @UseFilters(new ExceptionFilter())
-  @MessagePattern('login')
-  async login(@Body() request): Promise<any> {
-    return await this.authService.login(request);
-  }
 }
