@@ -1,5 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { BaseEntity } from '../base.entity';
+import { Allergy } from 'src/emergency/entities/allergy.entity';
+import { Medication } from 'src/emergency/entities/medication.entity';
 import { Contact } from 'src/emergency/entities/contact.entity';
 
 @Entity('users')
@@ -50,7 +52,12 @@ export class Users extends BaseEntity {
   @Column('boolean', { default: false })
   emailVerfied: boolean;
 
-  // @OneToMany(type => Contact,contact => contact.user, { eager: true})
-  //   contacts: Contact[];
+  @OneToMany(type => Allergy, allergy => allergy.user, { eager: true})
+  allergies: Allergy[];
 
+  @OneToMany(type => Medication, medication => medication.user, { eager: true})
+  medications: Medication[];
+
+  @OneToMany(type => Contact, contact => contact.user, { eager: true})
+  contacts: Contact[];
 }

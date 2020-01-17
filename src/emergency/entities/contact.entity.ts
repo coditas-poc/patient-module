@@ -15,7 +15,7 @@ export class Contact extends BaseEntity {
     @Column('varchar', { length: 20 })
     phone: string;
 
-    // @ManyToOne(type => Users, user => user.contacts, { eager: false})
-    // user: Users;
+    @ManyToOne(type => Users, user => user.contacts, { eager: false})
+    user: Users;
 
 }

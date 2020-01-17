@@ -12,7 +12,7 @@ export class Allergy extends BaseEntity {
     @Column('varchar', { length: 20 })
     level: string;
 
-    // @ManyToOne(type => Users, user => user.contacts, { eager: false})
-    // user: Users;
+    @ManyToOne(type => Users, user => user.allergies, { eager: false})
+    user: Users;
 
 }

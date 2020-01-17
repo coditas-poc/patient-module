@@ -15,7 +15,7 @@ export class Medication extends BaseEntity {
     @Column('varchar',{ length: 20 })
     time: string;
 
-    // @ManyToOne(type => Users, user => user.contacts, { eager: false})
-    // user: Users;
+    @ManyToOne(type => Users, user => user.medications, { eager: false})
+    user: Users;
 
 }

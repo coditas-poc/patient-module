@@ -14,13 +14,13 @@ export class EmergencyController {
     }
 
     @MessagePattern('getContactDetails')
-    async getContacts(){
-        return await this.emergencyServices.getContacts();
+    async getContacts(patient){
+        return await this.emergencyServices.getContacts(patient);
     }
 
     @MessagePattern('getMedicalDetails')
-    async getMedicalDetails(){
-        return await this.emergencyServices.getMedicalDetails();
+    async getMedicalDetails(patient){
+        return await this.emergencyServices.getMedicalDetails(patient);
     }
 
     @MessagePattern('addMedicalDetails')
