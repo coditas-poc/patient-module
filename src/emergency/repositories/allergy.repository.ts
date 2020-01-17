@@ -25,6 +25,7 @@ export class AllergyRepository extends Repository<Allergy> {
             throw new InternalServerErrorException();
         }
 
+        delete allergy.user;
         return allergy;
     }
 

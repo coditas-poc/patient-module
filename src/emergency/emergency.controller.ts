@@ -9,23 +9,23 @@ export class EmergencyController {
     constructor(private emergencyServices: EmergencyService){}
 
     @MessagePattern('addContactDetails')
-    addContact(createContactDto: CreateContactDto){
-        return this.emergencyServices.addContact(createContactDto);
+    addContact(contactDetails){
+        return this.emergencyServices.addContact(contactDetails);
     }
 
     @MessagePattern('getContactDetails')
-    async getContacts(patient){
-        return await this.emergencyServices.getContacts(patient);
+    async getContacts(id){
+        return await this.emergencyServices.getContacts(id);
     }
 
     @MessagePattern('getMedicalDetails')
-    async getMedicalDetails(patient){
-        return await this.emergencyServices.getMedicalDetails(patient);
+    async getMedicalDetails(id){
+        return await this.emergencyServices.getMedicalDetails(id);
     }
 
     @MessagePattern('addMedicalDetails')
-    async addMedicalDetails(data){
-        return await this.emergencyServices.addMedicalDetails(data);
+    async addMedicalDetails(medicalDetails){
+        return await this.emergencyServices.addMedicalDetails(medicalDetails);
     }
     
 

@@ -26,6 +26,7 @@ export class ContactRepository extends Repository<Contact> {
             throw new InternalServerErrorException();
         }
 
+        delete contact.user;
         return contact;
     }
 

@@ -26,13 +26,13 @@ export class MedicationRepository extends Repository<Medication> {
             throw new InternalServerErrorException();
         }
 
+        delete medication.user;
         return medication;
     }
 
     async getMedications(user: Users): Promise<Medication[]> {
         const query = this.createQueryBuilder('medication');
         query.where('"medication"."userId" = :userId', { userId: user.id});
-        this.logger.verbose(user);
 
         try {
             const medications = await query.getMany();

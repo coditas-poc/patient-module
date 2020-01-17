@@ -18,47 +18,38 @@ export class EmergencyService {
         private userRepository: UserRepository
         ){}
 
-    async addContact(data){
-        const user = await this.userRepository.findOne({
-            email: data.user.email
-        })
-
+    async addContact(contactDetails){
+        const user = await this.userRepository.findOne(contactDetails.id);
         if(!user){
             throw new UnauthorizedException();
         }
 
-        return await this.contactRepository.addContact(data.contact,user);
+        return await this.contactRepository.addContact(contactDetails.contact,user);
     }
 
-    async getContacts(patient){
-        const user = await this.userRepository.findOne({
-            email: patient.email
-        })
-        
-        if(!patient){
+    async getContacts(id){
+        const user = await this.userRepository.findOne(id); 
+        if(!user){
             throw new UnauthorizedException();
         }
         const contacts = await this.contactRepository.getContacts(user);
         return contacts;
     }
     
-    async addMedicalDetails(data){
+    async addMedicalDetails(medicalDetails){
         let allergies = [];
         let medicines = [];
 
-        const user = await this.userRepository.findOne({
-            email: data.user.email
-        })
-
+        const user = await this.userRepository.findOne(medicalDetails.id);
         if(!user){
             throw new UnauthorizedException();
         }
         
-        await Promise.all(data.emergency.allergies.map(async (allergy: CreateAllergyDto): Promise<any> => {
+        await Promise.all(medicalDetails.emergency.allergies.map(async (allergy: CreateAllergyDto): Promise<any> => {
              allergies.push(await this.allergyRepository.addAllergy(allergy,user));
         }))
         
-        await Promise.all(data.emergency.medicines.map(async (medicine: CreateMedicationDto): Promise<any> =>{
+        await Promise.all(medicalDetails.emergency.medicines.map(async (medicine: CreateMedicationDto): Promise<any> =>{
             medicines.push(await this.medicationRepository.addMedication(medicine,user));
         }))
 
@@ -67,25 +58,19 @@ export class EmergencyService {
         }
     }
 
-    async getMedicalDetails(patient){
-        const user = await this.userRepository.findOne({
-            email: patient.email
-        })
-        
-        if(!patient){
+    async getMedicalDetails(id){
+        const user = await this.userRepository.findOne(id);
+        if(!user){
             throw new UnauthorizedException();
         }
 
         const allergies = await this.allergyRepository.getAllergies(user);
         const medicines = await this.medicationRepository.getMedications(user);
 
-        this.logger.verbose(patient);
-
         return {
             allergies,
             medicines
         }
     }
-
     
 }
