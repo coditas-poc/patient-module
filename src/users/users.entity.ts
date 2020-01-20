@@ -1,8 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from '../base.entity';
 import { Allergy } from 'src/emergency/entities/allergy.entity';
 import { Medication } from 'src/emergency/entities/medication.entity';
 import { Contact } from 'src/emergency/entities/contact.entity';
+import { Credentials } from 'src/credentials/credentials.entity';
 
 @Entity('users')
 export class Users extends BaseEntity {
@@ -60,4 +61,7 @@ export class Users extends BaseEntity {
 
   @OneToMany(type => Contact, contact => contact.user, { eager: true})
   contacts: Contact[];
+
+  @OneToOne(type => Credentials, credential => credential.user, { eager: true })
+  credential: Credentials;
 }
