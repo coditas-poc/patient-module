@@ -7,10 +7,10 @@ export class Allergy extends BaseEntity {
     id: number;
 
     @Column('varchar', { length: 100 })
-    name: string;
+    item: string;
 
     @Column('varchar', { length: 20 })
-    level: string;
+    severity: string;
 
     @ManyToOne(type => Users, user => user.allergies, { eager: false})
     user: Users;

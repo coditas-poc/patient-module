@@ -13,9 +13,9 @@ export class AllergyRepository extends Repository<Allergy> {
         user: Users
         ){
         const allergy = new Allergy();
-        const { name, level } = createAllergyDto;
-        allergy.name = name;
-        allergy.level = level;
+        const { item, severity } = createAllergyDto;
+        allergy.item = item;
+        allergy.severity = severity;
         allergy.user = user;
 
         try{

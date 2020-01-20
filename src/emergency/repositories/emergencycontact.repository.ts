@@ -1,18 +1,18 @@
 import { EntityRepository, Repository } from "typeorm";
-import { Contact } from "../entities/contact.entity";
 import { CreateContactDto } from "../dto/create-contact.dto";
 import { InternalServerErrorException, Logger } from "@nestjs/common";
 import { Users } from "src/users/users.entity";
+import { EmergencyContact } from "../entities/emergencycontact.entity";
 
-@EntityRepository(Contact)
-export class ContactRepository extends Repository<Contact> {
-    private logger = new Logger('ContactRepository');
+@EntityRepository(EmergencyContact)
+export class EmergencyContactRepository extends Repository<EmergencyContact> {
+    private logger = new Logger('EmergencyContactRepository');
 
     async addContact(
         createContactDto: CreateContactDto,
         user: Users
         ){
-        const contact = new Contact();
+        const contact = new EmergencyContact();
         const { name, relation, phone } = createContactDto;
         contact.name = name;
         contact.relation = relation;
@@ -30,7 +30,7 @@ export class ContactRepository extends Repository<Contact> {
         return contact;
     }
 
-    async getContacts(user: Users): Promise<Contact[]>{
+    async getContacts(user: Users): Promise<EmergencyContact[]>{
         const query = this.createQueryBuilder('contact');
         query.where('"contact"."userId" = :userId', { userId : user.id});
 

@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from 'typ
 import { BaseEntity } from '../base.entity';
 import { Allergy } from 'src/emergency/entities/allergy.entity';
 import { Medication } from 'src/emergency/entities/medication.entity';
-import { Contact } from 'src/emergency/entities/contact.entity';
+import { EmergencyContact } from 'src/emergency/entities/emergencycontact.entity';
 import { Credentials } from 'src/credentials/credentials.entity';
 
 @Entity('users')
@@ -59,8 +59,8 @@ export class Users extends BaseEntity {
   @OneToMany(type => Medication, medication => medication.user, { eager: true})
   medications: Medication[];
 
-  @OneToMany(type => Contact, contact => contact.user, { eager: true})
-  contacts: Contact[];
+  @OneToMany(type => EmergencyContact, contact => contact.user, { eager: true})
+  contacts: EmergencyContact[];
 
   @OneToOne(type => Credentials, credential => credential.user, { eager: true })
   credential: Credentials;

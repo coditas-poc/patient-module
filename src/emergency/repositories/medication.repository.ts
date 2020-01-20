@@ -13,9 +13,9 @@ export class MedicationRepository extends Repository<Medication> {
         user: Users
         ){
         const medication = new Medication();
-        const { name, level,time } = createMedicationDto;
+        const { name, dosage,time } = createMedicationDto;
         medication.name = name;
-        medication.level = level;
+        medication.dosage = dosage;
         medication.time = time;
         medication.user = user;
         

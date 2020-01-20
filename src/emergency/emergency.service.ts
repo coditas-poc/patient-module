@@ -1,5 +1,5 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { ContactRepository } from './repositories/contact.repository';
+import { EmergencyContactRepository } from './repositories/emergencycontact.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AllergyRepository } from './repositories/allergy.repository';
 import { MedicationRepository } from './repositories/medication.repository';
@@ -11,8 +11,8 @@ import { UserRepository } from 'src/users/user.repository';
 export class EmergencyService {
     private logger = new Logger('EmergencyService');
     constructor(
-        @InjectRepository(ContactRepository)
-        private contactRepository: ContactRepository,
+        @InjectRepository(EmergencyContactRepository)
+        private emergencyContactRepository: EmergencyContactRepository,
         private allergyRepository: AllergyRepository,
         private medicationRepository: MedicationRepository,
         private userRepository: UserRepository
@@ -24,7 +24,7 @@ export class EmergencyService {
             throw new UnauthorizedException();
         }
 
-        return await this.contactRepository.addContact(contactDetails.contact,user);
+        return await this.emergencyContactRepository.addContact(contactDetails.contact,user);
     }
 
     async getContacts(id){
@@ -32,7 +32,7 @@ export class EmergencyService {
         if(!user){
             throw new UnauthorizedException();
         }
-        const contacts = await this.contactRepository.getContacts(user);
+        const contacts = await this.emergencyContactRepository.getContacts(user);
         return contacts;
     }
     
