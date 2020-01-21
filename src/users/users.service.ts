@@ -85,9 +85,9 @@ export class UsersService {
     const usersData = await this.usersRepository.save(rest);
 
     if (usersData) {
-      const userId = usersData.id;
+      const user = usersData;
       const { email } = usersData;
-      await this.loginRepository.save({ email, password: hashPass, userId });
+      await this.loginRepository.save({ email, password: hashPass, user });
       return usersData;
     }
   }

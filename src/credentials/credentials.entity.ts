@@ -8,6 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { BaseEntity } from '../base.entity';
+import { Users } from 'src/users/users.entity';
 
 @Entity('credentials')
 export class Credentials extends BaseEntity {
@@ -18,6 +19,8 @@ export class Credentials extends BaseEntity {
   @Column('text', { nullable: true })
   password: string;
 
-  @Column('varchar', { length: 500, nullable: true })
-  userId: string;
+  @OneToOne(type => Users, user => user.credential, { eager: false})
+  @JoinColumn()
+  user: Users;
+
 }
