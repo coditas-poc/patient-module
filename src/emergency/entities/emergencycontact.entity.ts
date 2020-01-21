@@ -1,8 +1,8 @@
 import { Entity, BaseEntity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 import { Users } from "src/users/users.entity";
 
-@Entity('contact')
-export class Contact extends BaseEntity {
+@Entity('emergencycontact')
+export class EmergencyContact extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 

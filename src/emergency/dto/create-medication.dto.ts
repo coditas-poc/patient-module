@@ -5,7 +5,7 @@ export class CreateMedicationDto {
     name: string;
 
     @IsNotEmpty()
-    level: string;
+    dosage: string;
 
     @IsNotEmpty()
     time: string;

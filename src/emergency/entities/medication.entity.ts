@@ -10,7 +10,7 @@ export class Medication extends BaseEntity {
     name: string;
 
     @Column('varchar', { length: 20 })
-    level: string;
+    dosage: string;
 
     @Column('varchar',{ length: 20 })
     time: string;
